@@ -20,9 +20,11 @@ namespace GradTest
             VectorVersion();
         }
 
+        /// <summary>
+        /// 只有一个参数时的拟合方法
+        /// </summary>
         static void ScalarVersion()
         {
-            //函数只有一个参数时
             var algorithm = new GoldenSectionMinimizer(1e-8, 100000);
             var f1 = new Func<double, double>(ScalarHuberLoss);
             var obj = ObjectiveFunction.ScalarValue(f1);
@@ -39,7 +41,12 @@ namespace GradTest
             }
         }
 
-        static double ScalarHuberLoss(double theta1)
+        /// <summary>
+        /// 只有一个参数时的 HuberLoss 
+        /// </summary>
+        /// <param name="theta1">回归直线的系数</param>
+        /// <returns>损失</returns>
+        private static double ScalarHuberLoss(double theta1)
         {
             int len = yArr.Length;
             double res = 0;
@@ -60,7 +67,10 @@ namespace GradTest
             return sumLoss;
         }
 
-        static void VectorVersion()
+        /// <summary>
+        /// 有多个参数时，使用梯度下降法实现 HuberLoss
+        /// </summary>
+        private static void VectorVersion()
         {
             //初始化两个矩阵
             var xMat = new DenseMatrix(2, len);
@@ -124,8 +134,9 @@ namespace GradTest
             var r1 = solver.FindMinimum(obj, new DenseVector(new[]{0.0, 0.0}));
             Console.WriteLine(r1.MinimizingPoint);
         }
-
-        static double VectorHuberLoss(Vector<double> theta)
+        
+        
+        private static double VectorHuberLoss(Vector<double> theta)
         {
             var len = yArr.Length;
             double sumLoss = 0;

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.Optimization;
@@ -17,9 +19,9 @@ namespace GradTest
         private double[] scalarPred;
         private double[] vectorPred;
 
-        public HuberLossSolver()
+        public HuberLossSolver(string filepath)
         {
-            _xArr = new double[]
+            /*_xArr = new double[]
             {
                 0, 3, 9, 14, 15, 19, 20, 21, 30, 35,
                 40, 41, 42, 43, 54, 56, 67, 69, 72, 88
@@ -28,8 +30,21 @@ namespace GradTest
             {
                 33, 68, 34, 34, 37, 71, 37, 44, 48, 49,
                 53, 49, 50, 48, 56, 60, 61, 63, 44, 71
-            };
+            };*/
+            var reader = new StreamReader(filepath);
+            var x = new List<double>();
+            var y = new List<double>();
+            while (!reader.EndOfStream)
+            {
+                var line = reader.ReadLine();
+                //Console.WriteLine(line);
+                var values = line.Split('\t');
+                x.Add(double.Parse(values[0]));
+                y.Add(double.Parse(values[1]));
+            }
             Console.WriteLine("Construct Success!");
+            _xArr = x.ToArray();
+            _yArr = y.ToArray();
         }
         
         /// <summary>

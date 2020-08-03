@@ -6,7 +6,9 @@ namespace GradTest
     {
         private static void Main(string[] args)
         {
-            var a = new HuberLossSolver();
+            var filepath = args[0];
+            Console.WriteLine(filepath);
+            var a = new HuberLossSolver(filepath);
             var b = a.VectorHuberLossSolver();
             foreach (var d in b)
             {

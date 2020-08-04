@@ -25,7 +25,7 @@ namespace GradTest
             var x = new List<double>();
             var y = new List<double>();
             var index = 0;
-            while (!reader.EndOfStream && index < 1000)
+            while (!reader.EndOfStream && index < 50)
             {
                 var line = reader.ReadLine();
                 //Console.WriteLine(line);
@@ -143,13 +143,9 @@ namespace GradTest
             var g = new Func<Vector<double>, Vector<double>>(dVectorHuberLoss);
             var obj = ObjectiveFunction.Gradient(f, g);
             var r1 = solver.FindMinimum(obj, new DenseVector(new[]{0.0, 0.0}));
-            Console.WriteLine(r1.MinimizingPoint);
+            Console.WriteLine(r1.MinimizingPoint.ToString("#0.00000000"));
+            // 由于只默认显示1位小数，导致与python计算结果比较时出现十分整齐的误差，格式化之后解决
             vectorPred = new double[len];
-            for (var i = 0; i < len; i++)
-            {
-                vectorPred[i] = _xArr[i] * r1.MinimizingPoint[1] + r1.MinimizingPoint[0];
-                //Console.WriteLine(vectorPred[i]);
-            }
             return vectorPred;
         }
         

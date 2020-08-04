@@ -6,14 +6,12 @@ namespace GradTest
     {
         private static void Main(string[] args)
         {
-            var filepath = args[0];
-            Console.WriteLine(filepath);
-            var a = new HuberLossSolver(filepath);
-            var b = a.VectorHuberLossSolver();
-            foreach (var d in b)
-            {
-                Console.WriteLine(d);
-            }
+            var path2 = "/home/wyk/RiderProjects/HuberLossWithGrad/GradTest/hxjydq20200203.csv";
+            //var a = new LeastSquare(args[0]);
+            var b = new HuberLossSolver(args[0]);
+            //a.LeastSquareSolver();
+            b.VectorHuberLossSolver();
+            //a.LeastSquareSolver();
         }
     }
 }

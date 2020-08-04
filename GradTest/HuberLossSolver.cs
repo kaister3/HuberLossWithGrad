@@ -15,32 +15,24 @@ namespace GradTest
          * 在字段声明中，readonly 指示只能在声明期间或在同一个类的构造函数中向字段赋值。
          * 可以在字段声明和构造函数中多次分配和重新分配只读字段
          */
-        private const int delta = 2;
+        private const int delta = 3;
         private double[] scalarPred;
         private double[] vectorPred;
 
         public HuberLossSolver(string filepath)
         {
-            /*_xArr = new double[]
-            {
-                0, 3, 9, 14, 15, 19, 20, 21, 30, 35,
-                40, 41, 42, 43, 54, 56, 67, 69, 72, 88
-            };
-            _yArr = new double[]
-            {
-                33, 68, 34, 34, 37, 71, 37, 44, 48, 49,
-                53, 49, 50, 48, 56, 60, 61, 63, 44, 71
-            };*/
             var reader = new StreamReader(filepath);
             var x = new List<double>();
             var y = new List<double>();
-            while (!reader.EndOfStream)
+            var index = 0;
+            while (!reader.EndOfStream && index < 1000)
             {
                 var line = reader.ReadLine();
                 //Console.WriteLine(line);
-                var values = line.Split('\t');
+                var values = line.Split(',');
                 x.Add(double.Parse(values[0]));
                 y.Add(double.Parse(values[1]));
+                index++;
             }
             Console.WriteLine("Construct Success!");
             _xArr = x.ToArray();
@@ -118,7 +110,8 @@ namespace GradTest
             for (var i = 0; i < len; i++)
             {
                 yMat[0, i] = _yArr[i];
-            } 
+            }
+            
             Vector<double> dVectorHuberLoss(Vector<double> theta)
             {
                 //Console.WriteLine("receive argument:{0} {1}", theta[0], theta[1]);
@@ -138,27 +131,19 @@ namespace GradTest
                 //Console.WriteLine("After:" + mask);
 
                 var ans = mask * xMat.Transpose();
-                var ret = new DenseVector(new[] {0.01 * ans[0, 0] / len, 0.01 * ans[0, 1] / len});
-                ret[0] = -0.01 * ans[0, 0] / len;
-                ret[1] = -0.01 * ans[0, 1] / len;
+                var ret = new DenseVector(new[] {-ans[0, 0] / len, -ans[0, 1] / len});
+                //ret[0] = - ans[0, 0] / len;
+                //ret[1] = -ans[0, 1] / len;
                 //Console.WriteLine("next theta step: theta[0] = {0} theta[1] = {1}" , ret[0], ret[1]);
                 return ret;
             }
-            /*
-            var numiter = 500;
-            var theta = new DenseVector(new []{0.0, 0.0});
-            for (int i = 0; i < numiter; i++)
-            {
-                Console.WriteLine(theta);
-                
-                Console.WriteLine(theta);
-            }*/       
-            var solver = new BfgsMinimizer(1e-8, 1e-8, 1e-8, 1000);
+            
+            var solver = new BfgsMinimizer(1e-8, 1e-8, 1e-8, 1000000);
             var f = new Func<Vector<double>, double>(VectorHuberLoss);
             var g = new Func<Vector<double>, Vector<double>>(dVectorHuberLoss);
             var obj = ObjectiveFunction.Gradient(f, g);
             var r1 = solver.FindMinimum(obj, new DenseVector(new[]{0.0, 0.0}));
-            //Console.WriteLine(r1.MinimizingPoint);
+            Console.WriteLine(r1.MinimizingPoint);
             vectorPred = new double[len];
             for (var i = 0; i < len; i++)
             {

@@ -11,21 +11,25 @@ namespace GradTest
     {
         private readonly double[] _xArr;
         private readonly double[] _yArr;
-        /*
+        /* 
          * 在字段声明中，readonly 指示只能在声明期间或在同一个类的构造函数中向字段赋值。
          * 可以在字段声明和构造函数中多次分配和重新分配只读字段
          */
-        private const int delta = 3;
+        private const int delta = 2;
         private double[] scalarPred;
         private double[] vectorPred;
 
+        /// <summary>
+        /// 构造方法
+        /// </summary>
+        /// <param name="filepath"></param>
         public HuberLossSolver(string filepath)
         {
             var reader = new StreamReader(filepath);
             var x = new List<double>();
             var y = new List<double>();
             var index = 0;
-            while (!reader.EndOfStream && index < 50)
+            while (!reader.EndOfStream && index < 500)
             {
                 var line = reader.ReadLine();
                 //Console.WriteLine(line);
@@ -95,7 +99,7 @@ namespace GradTest
         /// <param name="theta"></param>
         /// <returns></returns>
         
-        public double[] VectorHuberLossSolver()
+        public Vector<double> VectorHuberLossSolver()
         {
             var len = _xArr.Length;
             //初始化两个矩阵
@@ -114,7 +118,9 @@ namespace GradTest
             
             Vector<double> dVectorHuberLoss(Vector<double> theta)
             {
-                //Console.WriteLine("receive argument:{0} {1}", theta[0], theta[1]);
+                /*
+                 * 输入猜测值，返回当前点梯度
+                 */
                 var thetaMatrix = new DenseMatrix(1, 2) {[0, 0] = theta[0], [0, 1] = theta[1]};
                 var mask = yMat - thetaMatrix * xMat;
                 for (var i = 0; i < len; i++)
@@ -131,10 +137,8 @@ namespace GradTest
                 //Console.WriteLine("After:" + mask);
 
                 var ans = mask * xMat.Transpose();
+                //此处为梯度：注意加符号
                 var ret = new DenseVector(new[] {-ans[0, 0] / len, -ans[0, 1] / len});
-                //ret[0] = - ans[0, 0] / len;
-                //ret[1] = -ans[0, 1] / len;
-                //Console.WriteLine("next theta step: theta[0] = {0} theta[1] = {1}" , ret[0], ret[1]);
                 return ret;
             }
             
@@ -146,7 +150,7 @@ namespace GradTest
             Console.WriteLine(r1.MinimizingPoint.ToString("#0.00000000"));
             // 由于只默认显示1位小数，导致与python计算结果比较时出现十分整齐的误差，格式化之后解决
             vectorPred = new double[len];
-            return vectorPred;
+            return r1.MinimizingPoint;
         }
         
         /// <summary>

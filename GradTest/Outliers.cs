@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.OdeSolvers;
 
 namespace GradTest
 {
@@ -38,14 +37,13 @@ namespace GradTest
 
             var ans = new List<int>();
             var a = res.Sum() / len;
-            for (int i = 0; i < len; i++)
+            for (var i = 0; i < len; i++)
             {
+                //（残差-残差均值）/残差标准差
                 var temp = (res[i] - a) / a;
-                if (Math.Abs(temp) > 3)
-                {
-                    Console.WriteLine("Error : " + y[i]);
-                    ans.Append(i);
-                }
+                if (!(Math.Abs(temp) > 3)) continue;
+                Console.WriteLine("Error : " + y[i]);
+                ans.Append(i);
             }
 
             return ans;

@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.Optimization;
 
 namespace GradTest
 {
+    /// <summary>
+    /// 最小均方误差的梯度下降法，作为参照
+    /// </summary>
     public class LeastSquare
     {
         private readonly double[] _xArr;
@@ -32,7 +36,7 @@ namespace GradTest
             {
                 var line = reader.ReadLine();
                 //Console.WriteLine(line);
-                var values = line.Split('\t');
+                var values = line.Split(',');
                 x.Add(double.Parse(values[0]));
                 y.Add(double.Parse(values[1]));
                 index++;
@@ -64,6 +68,9 @@ namespace GradTest
             
             Vector<double> dLeastSquareLoss(Vector<double> theta)
             {
+                /*
+                 * 
+                 */
                 var theta0 = 0.0;
                 var theta1 = 0.0;
                 var sum = 0.0;
@@ -85,15 +92,9 @@ namespace GradTest
             Console.WriteLine(r1.MinimizingPoint);
         }
 
-        public double LeastSquareLoss(Vector<double> theta)
+        private double LeastSquareLoss(Vector<double> theta)
         {
-            var loss = 0.0;
-            for (var i = 0; i < _xArr.Length; i++)
-            {
-                loss += Math.Pow(theta[0] + theta[1] * _xArr[i] - _yArr[i], 2);
-            }
-
-            return loss;
+            return _xArr.Select((t, i) => Math.Pow(theta[0] + theta[1] * t - _yArr[i], 2)).Sum();
         }
     }
 }
